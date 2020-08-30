@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>Harbor搭建与使用</title>
+    <link href="/2020/08/30/Harbor%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8/"/>
+    <url>/2020/08/30/Harbor%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<h3 id="Harbor介绍"><a href="#Harbor介绍" class="headerlink" title="Harbor介绍"></a>Harbor介绍</h3><p>Habor是由VMWare公司开源的容器镜像仓库。事实上，Habor是在Docker Registry上进行了相应的企业级扩展，从而获得了更加广泛的应用，这些新的企业级特性包括：管理用户界面，基于角色的访问控制 ，AD/LDAP集成以及审计日志等，足以满足基本企业需求。</p><h3 id="Harbor安装部署"><a href="#Harbor安装部署" class="headerlink" title="Harbor安装部署"></a>Harbor安装部署</h3><h4 id="一、前期准备"><a href="#一、前期准备" class="headerlink" title="一、前期准备"></a>一、前期准备</h4><h5 id="1、安装docker"><a href="#1、安装docker" class="headerlink" title="1、安装docker"></a>1、安装docker</h5><pre><code class="hljs shell">wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repoyum -y install docker-ce-18.06.1.ce-3.el7systemctl enable docker &amp;&amp; systemctl start dockerdocker --version</code></pre><blockquote><p>Docker version 18.06.1-ce, build e68fc7a</p></blockquote><h5 id="2、下载harbor安装包"><a href="#2、下载harbor安装包" class="headerlink" title="2、下载harbor安装包"></a>2、下载harbor安装包</h5><p><code>Github地址</code>：<a href="https://github.com/goharbor/harbor/releases/tag/v1.8.5">https://github.com/goharbor/harbor/releases/tag/v1.8.5</a></p><pre><code class="hljs shell">tar -zxvf harbor-offline-installer-v1.8.5.tgz -C /homepwd/home/harborlscommon  docker-compose.yml  harbor.v1.8.5.tar.gz  harbor.yml  install.sh  LICENSE  prepare</code></pre><h5 id="3、修改harbor-yml"><a href="#3、修改harbor-yml" class="headerlink" title="3、修改harbor.yml"></a>3、修改harbor.yml</h5><p><code> vim harbor.yml</code></p><blockquote><p>hostname: 192.168.220.131（修改为ip或者域名）<br>port: 8090 （默认80，自行修改）<br>harbor_admin_password: Harbor12345（登录harbor密码，自行修改）<br>data_volume: /home/data/harbor_data（数据存放目录，自行修改）</p></blockquote><p><code>vim /etc/docker/daemon.json</code></p><pre><code class="hljs shell">&#123; &quot;insecure-registries&quot; : [&quot;192.168.220.131:8090&quot;]&#125;</code></pre><p>重启docker</p><pre><code class="hljs bash">systemctl daemon-reloadsystemctl restart docker</code></pre><h5 id="4、访问harbor"><a href="#4、访问harbor" class="headerlink" title="4、访问harbor"></a>4、访问harbor</h5><pre><code class="hljs shell">http://192.168.220.131:8090/</code></pre><p>新建项目：<code>nathaniel-e</code></p><p>推送镜像：</p><blockquote><p>docker login <a href="http://192.168.220.131:8090/">http://192.168.220.131:8090</a><br>admin<br>Harbor12345<br>docker tag SOURCE_IMAGE[:TAG] 192.168.220.131:8090/nathaniel-e/IMAGE[:TAG]<br>docker push 192.168.220.131:8090/nathaniel-e/IMAGE[:TAG]</p></blockquote><p><strong>参考文档：</strong></p><p><strong><a href="https://www.jianshu.com/p/4f9474081c8a">https://www.jianshu.com/p/4f9474081c8a</a></strong></p><p><strong><a href="https://www.meiwen.com.cn/subject/qwedoftx.html">https://www.meiwen.com.cn/subject/qwedoftx.html</a></strong></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Harbor</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Zookeeper入门看这篇就够了</title>
     <link href="/2020/08/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"/>
     <url>/2020/08/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/</url>

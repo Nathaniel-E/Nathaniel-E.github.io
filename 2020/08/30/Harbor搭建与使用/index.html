@@ -17,7 +17,7 @@
   <meta name="description" content="">
   <meta name="author" content="nathaniel">
   <meta name="keywords" content="">
-  <title>Zookeeper入门看这篇就够了 - nathaniel</title>
+  <title>Harbor搭建与使用 - nathaniel</title>
 
   <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
 
@@ -160,7 +160,7 @@
               
   <div class="mt-3 post-meta">
     <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-    <time datetime="2020-08-30 18:15" pubdate>
+    <time datetime="2020-08-30 19:16" pubdate>
       2020年8月30日 晚上
     </time>
   </div>
@@ -171,7 +171,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      897 字
+      356 字
     </span>
   
 
@@ -181,7 +181,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      11
+      5
        分钟
     </span>
   
@@ -211,129 +211,48 @@
         <div class="py-5" id="board">
           <article class="post-content mx-auto" id="post">
             <!-- SEO header -->
-            <h1 style="display: none">Zookeeper入门看这篇就够了</h1>
+            <h1 style="display: none">Harbor搭建与使用</h1>
             
             <div class="markdown-body" id="post-body">
-              <h2 id="zookeeper特点"><a href="#zookeeper特点" class="headerlink" title="zookeeper特点"></a>zookeeper特点</h2><blockquote>
-<ul>
-<li>zookeeper：一个领导者（leader），多个跟随着（follower）组成的集群。</li>
-<li>集群中只要有半数以上的节点存活，zookeeper集群就能正常服务。</li>
-<li>全局数据一致：每个server保存相同的数据副本，client无论连接到哪一个server，数据都是一致的。</li>
-<li>更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行。</li>
-<li>数据更新原子性，一次数据更新要么成功，要么失败。</li>
-<li>实时性，在一定时间范围内，client连接到最新数据。</li>
-</ul>
-</blockquote>
-<h2 id="zookeeper数据结构"><a href="#zookeeper数据结构" class="headerlink" title="zookeeper数据结构"></a>zookeeper数据结构</h2><blockquote>
-<p>zookeeper数据模型和unix文件系统类似，每一个节点叫做一个ZNode。每一个ZNode默认能够存储1MB的数据，每个ZNode都可以通过其路径唯一标识。</p>
-</blockquote>
-<h2 id="zookeeper应用场景"><a href="#zookeeper应用场景" class="headerlink" title="zookeeper应用场景"></a>zookeeper应用场景</h2><ul>
-<li><p>统一命名服务</p>
-<p>分布式环境下，经常需要对应用服务统一命名，便于识别。</p>
-<pre><code>`IP不容易记住，域名可以`</code></pre>
-</li>
-<li><p>统一配置管理</p>
-<p>分布式环境下，配置文件同步。</p>
-<ol>
-<li>集群下，所有节点的配置信息是一致的，如<code>Kafka</code>集群</li>
-<li>对配置文件修改后，快速同步到各个节点上</li>
-</ol>
-<p>配置管理可交由zookeeper实现。</p>
-<ol>
-<li>可将配置信息写入zookeeper上的一个<code>ZNode</code></li>
-<li>各个客户端服务器监听这个<code>ZNode</code></li>
-<li>一旦ZNode中的数据被修改，zookeeper将通知各个<code>客户端服务器</code></li>
-</ol>
-</li>
-<li><p>统一集群管理</p>
-<p>分布式环境下，实时掌握每个节点的状态。</p>
-<ol>
-<li>可根据节点实时状态做一些调整    </li>
-</ol>
-<p>zookeeper可以实现实时监控节点状态变化。</p>
-<ol>
-<li>可将节点信息写入zookeeper上的<code>ZNode</code></li>
-<li>监听这个<code>NZode</code>可获取它的实时状态变化</li>
-</ol>
-</li>
-<li><p>服务器动态上下线</p>
-<p>客户端能实时洞察到服务器上下线的变化。</p>
-</li>
-<li><p>软负载均衡</p>
-<p>在zookeeper中记录每台服务器的访问数，让访问数最少的服务器去处理最新的客户端请求。</p>
-</li>
-</ul>
-<h2 id="zookeeper节点类型"><a href="#zookeeper节点类型" class="headerlink" title="zookeeper节点类型"></a>zookeeper节点类型</h2><blockquote>
-<p><code>持久</code>：客户端和服务器端断开连接后，创建的节点不删除。</p>
-<p><code>短暂</code>：客户端和服务器端断开连接后，创建的节点自己删除。</p>
-</blockquote>
-<h2 id="zookeeper集群部署"><a href="#zookeeper集群部署" class="headerlink" title="zookeeper集群部署"></a>zookeeper集群部署</h2><p><code>官网地址</code>：<a target="_blank" rel="noopener" href="https://zookeeper.apache.org/">https://zookeeper.apache.org</a></p>
-<ol>
-<li><p>准备3台机器</p>
+              <h3 id="Harbor介绍"><a href="#Harbor介绍" class="headerlink" title="Harbor介绍"></a>Harbor介绍</h3><p>Habor是由VMWare公司开源的容器镜像仓库。事实上，Habor是在Docker Registry上进行了相应的企业级扩展，从而获得了更加广泛的应用，这些新的企业级特性包括：管理用户界面，基于角色的访问控制 ，AD/LDAP集成以及审计日志等，足以满足基本企业需求。</p>
+<h3 id="Harbor安装部署"><a href="#Harbor安装部署" class="headerlink" title="Harbor安装部署"></a>Harbor安装部署</h3><h4 id="一、前期准备"><a href="#一、前期准备" class="headerlink" title="一、前期准备"></a>一、前期准备</h4><h5 id="1、安装docker"><a href="#1、安装docker" class="headerlink" title="1、安装docker"></a>1、安装docker</h5><pre><code class="hljs shell">wget https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo -O /etc/yum.repos.d/docker-ce.repo
+yum -y install docker-ce-18.06.1.ce-3.el7
+systemctl enable docker &amp;&amp; systemctl start docker
+docker --version</code></pre>
+
 <blockquote>
+<p>Docker version 18.06.1-ce, build e68fc7a</p>
+</blockquote>
+<h5 id="2、下载harbor安装包"><a href="#2、下载harbor安装包" class="headerlink" title="2、下载harbor安装包"></a>2、下载harbor安装包</h5><p><code>Github地址</code>：<a target="_blank" rel="noopener" href="https://github.com/goharbor/harbor/releases/tag/v1.8.5">https://github.com/goharbor/harbor/releases/tag/v1.8.5</a></p>
+<pre><code class="hljs shell">tar -zxvf harbor-offline-installer-v1.8.5.tgz -C /home
+pwd
+	/home/harbor
+ls
+	common  docker-compose.yml  harbor.v1.8.5.tar.gz  harbor.yml  install.sh  LICENSE  prepare</code></pre>
+
+<h5 id="3、修改harbor-yml"><a href="#3、修改harbor-yml" class="headerlink" title="3、修改harbor.yml"></a>3、修改harbor.yml</h5><p><code> vim harbor.yml</code></p>
 <blockquote>
-<p>vm001       192.168.220.128<br>vm002       192.168.220.129<br>vm003       192.168.220.130</p>
+<p>hostname: 192.168.220.131（修改为ip或者域名）<br>port: 8090 （默认80，自行修改）<br>harbor_admin_password: Harbor12345（登录harbor密码，自行修改）<br>data_volume: /home/data/harbor_data（数据存放目录，自行修改）</p>
 </blockquote>
+<p><code>vim /etc/docker/daemon.json</code></p>
+<pre><code class="hljs shell">&#123;
+ &quot;insecure-registries&quot; : [&quot;192.168.220.131:8090&quot;]
+&#125;</code></pre>
+
+<p>重启docker</p>
+<pre><code class="hljs bash">systemctl daemon-reload
+systemctl restart docker</code></pre>
+
+<h5 id="4、访问harbor"><a href="#4、访问harbor" class="headerlink" title="4、访问harbor"></a>4、访问harbor</h5><pre><code class="hljs shell">http://192.168.220.131:8090/</code></pre>
+
+<p>新建项目：<code>nathaniel-e</code></p>
+<p>推送镜像：</p>
+<blockquote>
+<p>docker login <a target="_blank" rel="noopener" href="http://192.168.220.131:8090/">http://192.168.220.131:8090</a><br>admin<br>Harbor12345<br>docker tag SOURCE_IMAGE[:TAG] 192.168.220.131:8090/nathaniel-e/IMAGE[:TAG]<br>docker push 192.168.220.131:8090/nathaniel-e/IMAGE[:TAG]</p>
 </blockquote>
-</li>
-<li><p>每台机器安装jdk</p>
-<pre><code class="hljs she">1）下载jdk包
-2）tar -zxvf jdk-8u191-linux-x64.tar.gz -C &#x2F;usr&#x2F;local
-3）添加环境变量：vim &#x2F;etc&#x2F;profile
-	export JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdk1.8.0_191
-	export PATH&#x3D;$PATH:$JAVA_HOME&#x2F;bin
-	更新配置文件：source &#x2F;etc&#x2F;profile
-4）验证：
-   	echo $JAVA_HOME 
-   	java -version</code></pre>
-</li>
-<li><p>下载apache-zookeeper-3.5.8-bin.tar.gz包</p>
-<p><code>解压tar -zxvf apache-zookeeper-3.5.8-bin.tar.gz -C /home/zookeeper</code></p>
-</li>
-<li><p>每台机器修改配置</p>
-<ul>
-<li><p>首先将zoo_sample.cfg配置文件修名为<code>zoo.cfg</code></p>
-</li>
-<li><p>vim zoo.cfg</p>
-<pre><code class="hljs shell">a、修改数据存储目录：
-	dataDir=/opt/zkData
-b、在配置末尾添加server
-	server.1=192.168.220.128:2881:3881
-	server.2=192.168.220.129:2881:3881
-	server.3=192.168.220.130:2881:3881</code></pre>
-</li>
-<li><p>在数据目录/opt/zkData中创建myid文件</p>
-</li>
-</ul>
-</li>
-<li><p>启动服务</p>
-<p><code>启动Server服务</code></p>
-<pre><code class="hljs shell"><span class="hljs-meta">]#</span><span class="bash">./zkServer.sh start</span></code></pre>
-
-<pre><code class="hljs shell">ZooKeeper JMX enabled by default
-Using config: /home/zookeeper/apache-zookeeper-3.5.8-bin/bin/../conf/zoo.cfg
-Starting zookeeper ... STARTED
-</code></pre>
-
-<p><code>查看状态</code></p>
-<pre><code class="hljs shell"><span class="hljs-meta">]#</span><span class="bash">./zkServer.sh status</span></code></pre>
-
-<pre><code class="hljs shell">ZooKeeper JMX enabled by default
-Using config: /home/zookeeper/apache-zookeeper-3.5.8-bin/bin/../conf/zoo.cfg
-Client port found: 2181. Client address: localhost.
-Mode: leader</code></pre>
-</li>
-<li><p>注意事项</p>
-<p>关闭防火墙，放通端口。</p>
-</li>
-</ol>
-<pre><code class="hljs shell">firewall-cmd --zone=public --add-port=2181/tcp --permanent
-firewall-cmd --zone=public --add-port=2881/tcp --permanent
-firewall-cmd --zone=public --add-port=3881/tcp --permanent
-firewall-cmd --reload
-firewall-cmd --zone=public --query-port=2181/tcp
-firewall-cmd --zone=public --list-ports</code></pre>
-
+<p><strong>参考文档：</strong></p>
+<p><strong><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/4f9474081c8a">https://www.jianshu.com/p/4f9474081c8a</a></strong></p>
+<p><strong><a target="_blank" rel="noopener" href="https://www.meiwen.com.cn/subject/qwedoftx.html">https://www.meiwen.com.cn/subject/qwedoftx.html</a></strong></p>
 
             </div>
             <hr>
@@ -344,7 +263,7 @@ firewall-cmd --zone=public --list-ports</code></pre>
                   <div class="post-meta">
                     <i class="iconfont icon-tags"></i>
                     
-                      <a class="hover-with-bg" href="/tags/Zookeeper/">Zookeeper</a>
+                      <a class="hover-with-bg" href="/tags/Harbor/">Harbor</a>
                     
                   </div>
                 
@@ -357,18 +276,12 @@ firewall-cmd --zone=public --list-ports</code></pre>
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2020/08/30/Harbor%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8/">
-                        <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">Harbor搭建与使用</span>
-                        <span class="visible-mobile">上一篇</span>
-                      </a>
-                    
                   </article>
                   <article class="post-next col-6">
                     
                     
-                      <a href="/2020/08/30/Nginx%E5%AD%A6%E4%B9%A0%E5%9F%BA%E4%BA%8EDocker/">
-                        <span class="hidden-mobile">Nginx笔记基于docker</span>
+                      <a href="/2020/08/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/">
+                        <span class="hidden-mobile">Zookeeper入门看这篇就够了</span>
                         <span class="visible-mobile">下一篇</span>
                         <i class="iconfont icon-arrowright"></i>
                       </a>
@@ -507,7 +420,7 @@ firewall-cmd --zone=public --list-ports</code></pre>
     var typed = new Typed('#subtitle', {
       strings: [
         '  ',
-        "Zookeeper入门看这篇就够了&nbsp;",
+        "Harbor搭建与使用&nbsp;",
       ],
       cursorChar: "_",
       typeSpeed: 70,
