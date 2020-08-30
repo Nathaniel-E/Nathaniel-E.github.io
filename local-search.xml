@@ -4,6 +4,25 @@
   
   
   <entry>
+    <title>Zookeeper入门看这篇就够了</title>
+    <link href="/2020/08/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/"/>
+    <url>/2020/08/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/</url>
+    
+    <content type="html"><![CDATA[<h2 id="zookeeper特点"><a href="#zookeeper特点" class="headerlink" title="zookeeper特点"></a>zookeeper特点</h2><blockquote><ul><li>zookeeper：一个领导者（leader），多个跟随着（follower）组成的集群。</li><li>集群中只要有半数以上的节点存活，zookeeper集群就能正常服务。</li><li>全局数据一致：每个server保存相同的数据副本，client无论连接到哪一个server，数据都是一致的。</li><li>更新请求顺序进行，来自同一个client的更新请求按其发送顺序依次执行。</li><li>数据更新原子性，一次数据更新要么成功，要么失败。</li><li>实时性，在一定时间范围内，client连接到最新数据。</li></ul></blockquote><h2 id="zookeeper数据结构"><a href="#zookeeper数据结构" class="headerlink" title="zookeeper数据结构"></a>zookeeper数据结构</h2><blockquote><p>zookeeper数据模型和unix文件系统类似，每一个节点叫做一个ZNode。每一个ZNode默认能够存储1MB的数据，每个ZNode都可以通过其路径唯一标识。</p></blockquote><h2 id="zookeeper应用场景"><a href="#zookeeper应用场景" class="headerlink" title="zookeeper应用场景"></a>zookeeper应用场景</h2><ul><li><p>统一命名服务</p><p>分布式环境下，经常需要对应用服务统一命名，便于识别。</p><pre><code>`IP不容易记住，域名可以`</code></pre></li><li><p>统一配置管理</p><p>分布式环境下，配置文件同步。</p><ol><li>集群下，所有节点的配置信息是一致的，如<code>Kafka</code>集群</li><li>对配置文件修改后，快速同步到各个节点上</li></ol><p>配置管理可交由zookeeper实现。</p><ol><li>可将配置信息写入zookeeper上的一个<code>ZNode</code></li><li>各个客户端服务器监听这个<code>ZNode</code></li><li>一旦ZNode中的数据被修改，zookeeper将通知各个<code>客户端服务器</code></li></ol></li><li><p>统一集群管理</p><p>分布式环境下，实时掌握每个节点的状态。</p><ol><li>可根据节点实时状态做一些调整    </li></ol><p>zookeeper可以实现实时监控节点状态变化。</p><ol><li>可将节点信息写入zookeeper上的<code>ZNode</code></li><li>监听这个<code>NZode</code>可获取它的实时状态变化</li></ol></li><li><p>服务器动态上下线</p><p>客户端能实时洞察到服务器上下线的变化。</p></li><li><p>软负载均衡</p><p>在zookeeper中记录每台服务器的访问数，让访问数最少的服务器去处理最新的客户端请求。</p></li></ul><h2 id="zookeeper节点类型"><a href="#zookeeper节点类型" class="headerlink" title="zookeeper节点类型"></a>zookeeper节点类型</h2><blockquote><p><code>持久</code>：客户端和服务器端断开连接后，创建的节点不删除。</p><p><code>短暂</code>：客户端和服务器端断开连接后，创建的节点自己删除。</p></blockquote><h2 id="zookeeper集群部署"><a href="#zookeeper集群部署" class="headerlink" title="zookeeper集群部署"></a>zookeeper集群部署</h2><p><code>官网地址</code>：<a href="https://zookeeper.apache.org/">https://zookeeper.apache.org</a></p><ol><li><p>准备3台机器</p><blockquote><blockquote><p>vm001       192.168.220.128<br>vm002       192.168.220.129<br>vm003       192.168.220.130</p></blockquote></blockquote></li><li><p>每台机器安装jdk</p><pre><code class="hljs she">1）下载jdk包2）tar -zxvf jdk-8u191-linux-x64.tar.gz -C &#x2F;usr&#x2F;local3）添加环境变量：vim &#x2F;etc&#x2F;profileexport JAVA_HOME&#x3D;&#x2F;usr&#x2F;local&#x2F;jdk1.8.0_191export PATH&#x3D;$PATH:$JAVA_HOME&#x2F;bin更新配置文件：source &#x2F;etc&#x2F;profile4）验证：   echo $JAVA_HOME    java -version</code></pre></li><li><p>下载apache-zookeeper-3.5.8-bin.tar.gz包</p><p><code>解压tar -zxvf apache-zookeeper-3.5.8-bin.tar.gz -C /home/zookeeper</code></p></li><li><p>每台机器修改配置</p><ul><li><p>首先将zoo_sample.cfg配置文件修名为<code>zoo.cfg</code></p></li><li><p>vim zoo.cfg</p><pre><code class="hljs shell">a、修改数据存储目录：dataDir=/opt/zkDatab、在配置末尾添加serverserver.1=192.168.220.128:2881:3881server.2=192.168.220.129:2881:3881server.3=192.168.220.130:2881:3881</code></pre></li><li><p>在数据目录/opt/zkData中创建myid文件</p></li></ul></li><li><p>启动服务</p><p><code>启动Server服务</code></p><pre><code class="hljs shell"><span class="hljs-meta">]#</span><span class="bash">./zkServer.sh start</span></code></pre><pre><code class="hljs shell">ZooKeeper JMX enabled by defaultUsing config: /home/zookeeper/apache-zookeeper-3.5.8-bin/bin/../conf/zoo.cfgStarting zookeeper ... STARTED</code></pre><p><code>查看状态</code></p><pre><code class="hljs shell"><span class="hljs-meta">]#</span><span class="bash">./zkServer.sh status</span></code></pre><pre><code class="hljs shell">ZooKeeper JMX enabled by defaultUsing config: /home/zookeeper/apache-zookeeper-3.5.8-bin/bin/../conf/zoo.cfgClient port found: 2181. Client address: localhost.Mode: leader</code></pre></li><li><p>注意事项</p><p>关闭防火墙，放通端口。</p></li></ol><pre><code class="hljs shell">firewall-cmd --zone=public --add-port=2181/tcp --permanentfirewall-cmd --zone=public --add-port=2881/tcp --permanentfirewall-cmd --zone=public --add-port=3881/tcp --permanentfirewall-cmd --reloadfirewall-cmd --zone=public --query-port=2181/tcpfirewall-cmd --zone=public --list-ports</code></pre>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>Zookeeper</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  <entry>
     <title>Nginx笔记基于docker</title>
     <link href="/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/"/>
     <url>/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/</url>
