@@ -64,10 +64,10 @@
       <div class="outer">
         <section id="main">
   
-    <article id="post-Nginx" class="article article-type-post" itemscope itemprop="blogPost">
+    <article id="post-Nginx笔记基于docker" class="article article-type-post" itemscope itemprop="blogPost">
   <div class="article-meta">
-    <a href="/2020/08/30/Nginx/" class="article-date">
-  <time datetime="2020-08-30T07:31:36.000Z" itemprop="datePublished">2020-08-30</time>
+    <a href="/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/" class="article-date">
+  <time datetime="2020-08-30T08:10:58.000Z" itemprop="datePublished">2020-08-30</time>
 </a>
     
   </div>
@@ -78,7 +78,7 @@
         
   
     <h1 itemprop="name">
-      <a class="article-title" href="/2020/08/30/Nginx/">Nginx学习基于docker</a>
+      <a class="article-title" href="/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/">Nginx笔记基于docker</a>
     </h1>
   
 
@@ -140,10 +140,10 @@
 <p>default.conf文件内容如下</p>
 <figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">    listen       80;</span><br><span class="line">    listen  [::]:80;</span><br><span class="line">    server_name  localhost;</span><br><span class="line"></span><br><span class="line">    location / &#123;</span><br><span class="line">        proxy_pass http://ncthz.top:8080/;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">重启nginx</span></span><br><span class="line">docker-compose restart</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">重启nginx</span></span><br><span class="line">docker-compose restart</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <p>这时我们访问80端口可以看到8080端口tomcat的默认首页</p>
-<h4 id="3-3关于Nginx的location路径映射"><a href="#3-3关于Nginx的location路径映射" class="headerlink" title="3.3关于Nginx的location路径映射"></a>3.3关于Nginx的location路径映射</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">优先级关系：</span><br><span class="line">(location = ) &gt; (location /xxx/yyy/zzz) &gt; (location ^~) &gt; (location ~,~*) &gt; (location /起始路径) &gt; (location /)</span><br></pre></td></tr></table></figure>
+<h4 id="3-3关于Nginx的location路径映射"><a href="#3-3关于Nginx的location路径映射" class="headerlink" title="3.3关于Nginx的location路径映射"></a>3.3关于Nginx的location路径映射</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">优先级关系：</span><br><span class="line">(location = ) &gt; (location /xxx/yyy/zzz) &gt; (location ^~) &gt; (location ~,~*) &gt; (location /起始路径) &gt; (location /)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash"> 1. = 匹配</span></span><br><span class="line">location / &#123;</span><br><span class="line"><span class="meta">	#</span><span class="bash">精准匹配，主机名后面不能带能和字符串</span></span><br><span class="line"><span class="meta">	#</span><span class="bash">例如www.baidu.com不能是www.baidu.com/id=xxx</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
@@ -185,15 +185,15 @@
 
 <h3 id="Nginx动静分离"><a href="#Nginx动静分离" class="headerlink" title="Nginx动静分离"></a>Nginx动静分离</h3><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Nginx的并发能力公式：</span><br><span class="line">  worker_processes * worker_connections / 4|2 = Nginx最终的并发能力</span><br><span class="line">动态资源需要/4，静态资源需要/2</span><br><span class="line">Nginx通过动静分离来提升Nginx的并发能力，更快的给用户响应</span><br></pre></td></tr></table></figure>
 
-<h4 id="5-1动态资源代理"><a href="#5-1动态资源代理" class="headerlink" title="5.1动态资源代理"></a>5.1动态资源代理</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">配置如下</span></span><br><span class="line">location / &#123;</span><br><span class="line">  proxy_pass 路径;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="5-1动态资源代理"><a href="#5-1动态资源代理" class="headerlink" title="5.1动态资源代理"></a>5.1动态资源代理</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">配置如下</span></span><br><span class="line">location / &#123;</span><br><span class="line">  proxy_pass 路径;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<h4 id="5-2静态资源代理"><a href="#5-2静态资源代理" class="headerlink" title="5.2静态资源代理"></a>5.2静态资源代理</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">停掉nginx</span></span><br><span class="line">docker-compose down</span><br><span class="line"></span><br><span class="line">修改docker-compose.yml添加静态资源数据卷</span><br><span class="line">不同版本的静态资源位置可能不同，可以在2.2中查看默认的位置（location块中root后的路径）</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">启动nginx</span></span><br><span class="line">docker-compose up -d</span><br></pre></td></tr></table></figure>
+<h4 id="5-2静态资源代理"><a href="#5-2静态资源代理" class="headerlink" title="5.2静态资源代理"></a>5.2静态资源代理</h4><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">停掉nginx</span></span><br><span class="line">docker-compose down</span><br><span class="line"></span><br><span class="line">修改docker-compose.yml添加静态资源数据卷</span><br><span class="line">不同版本的静态资源位置可能不同，可以在2.2中查看默认的位置（location块中root后的路径）</span><br><span class="line"></span><br><span class="line"><span class="meta">#</span><span class="bash">启动nginx</span></span><br><span class="line">docker-compose up -d</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">version: &#x27;3.1&#x27;</span><br><span class="line">services: </span><br><span class="line">  nginx:</span><br><span class="line">    restart: always</span><br><span class="line">    image: daocloud.io/library/nginx:latest</span><br><span class="line">    container_name: nginx</span><br><span class="line">    ports: </span><br><span class="line">      - 80:80</span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker_nginx/conf.d/:/etc/nginx/conf.d</span><br><span class="line">      - /opt/docker_nginx/html/:/usr/share/nginx/html</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">version: &#x27;3.1&#x27;</span><br><span class="line">services: </span><br><span class="line">  nginx:</span><br><span class="line">    restart: always</span><br><span class="line">    image: daocloud.io/library/nginx:latest</span><br><span class="line">    container_name: nginx</span><br><span class="line">    ports: </span><br><span class="line">      - 80:80</span><br><span class="line">    volumes:</span><br><span class="line">      - /opt/docker_nginx/conf.d/:/etc/nginx/conf.d</span><br><span class="line">      - /opt/docker_nginx/html/:/usr/share/nginx/html</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">在/opt/docker_nginx/html下新建一个index.html</span><br><span class="line">在index.html里面随便写点东西展示</span><br><span class="line">修改nginx的配置文件</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    root /usr/share/nginx/html;</span><br><span class="line">    index index.html;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">在/opt/docker_nginx/html下新建一个index.html</span><br><span class="line">在index.html里面随便写点东西展示</span><br><span class="line">修改nginx的配置文件</span><br><span class="line"></span><br><span class="line">location / &#123;</span><br><span class="line">    root /usr/share/nginx/html;</span><br><span class="line">    index index.html;</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">#配置如下</span><br><span class="line">location / &#123;</span><br><span class="line">    root 静态资源路径;</span><br><span class="line">    index 默认访问路径下的什么资源;</span><br><span class="line">    autoindex on;#代表展示静态资源的全部内容，以列表的形式展开</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#配置如下</span><br><span class="line">location / &#123;</span><br><span class="line">    root 静态资源路径;</span><br><span class="line">    index 默认访问路径下的什么资源;</span><br><span class="line">    autoindex on;#代表展示静态资源的全部内容，以列表的形式展开</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">重启nginx</span></span><br><span class="line">docker-compose restart</span><br><span class="line"><span class="meta">#</span><span class="bash">访问ncthz.top如下</span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
 
@@ -229,60 +229,11 @@
       
     </div>
     <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/30/Nginx/" data-id="ckegt0gu5000074tnaun52x9o" class="article-share-link">Share</a>
+      <a data-url="http://yoursite.com/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/" data-id="ckegtecip0000t8tnfal245dd" class="article-share-link">Share</a>
       
       
-  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li></ul>
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>
 
-    </footer>
-  </div>
-  
-</article>
-
-
-  
-    <article id="post-hello-world" class="article article-type-post" itemscope itemprop="blogPost">
-  <div class="article-meta">
-    <a href="/2020/08/30/hello-world/" class="article-date">
-  <time datetime="2020-08-30T07:19:55.727Z" itemprop="datePublished">2020-08-30</time>
-</a>
-    
-  </div>
-  <div class="article-inner">
-    
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2020/08/30/hello-world/">Hello World</a>
-    </h1>
-  
-
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-    </div>
-    <footer class="article-footer">
-      <a data-url="http://yoursite.com/2020/08/30/hello-world/" data-id="ckegs8g4r0000j8tnf80j2bxi" class="article-share-link">Share</a>
-      
-      
     </footer>
   </div>
   
@@ -303,7 +254,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签</h3>
     <div class="widget">
-      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Nginx/" rel="tag">Nginx</a></li></ul>
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/nginx/" rel="tag">nginx</a></li></ul>
     </div>
   </div>
 
@@ -313,7 +264,7 @@
   <div class="widget-wrap">
     <h3 class="widget-title">标签云</h3>
     <div class="widget tagcloud">
-      <a href="/tags/Nginx/" style="font-size: 10px;">Nginx</a>
+      <a href="/tags/nginx/" style="font-size: 10px;">nginx</a>
     </div>
   </div>
 
@@ -335,11 +286,7 @@
       <ul>
         
           <li>
-            <a href="/2020/08/30/Nginx/">Nginx学习基于docker</a>
-          </li>
-        
-          <li>
-            <a href="/2020/08/30/hello-world/">Hello World</a>
+            <a href="/2020/08/30/Nginx%E7%AC%94%E8%AE%B0%E5%9F%BA%E4%BA%8Edocker/">Nginx笔记基于docker</a>
           </li>
         
       </ul>
