@@ -1,0 +1,634 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="nathaniel">
+  <meta name="keywords" content="">
+  <title>Redis学习笔记 - nathaniel</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Nathaniel</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container page-header text-center fade-in-up">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2020-08-31 10:14" pubdate>
+      2020年8月31日 上午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      23
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">Redis学习笔记</h1>
+            
+            <div class="markdown-body" id="post-body">
+              <h3 id="一、介绍"><a href="#一、介绍" class="headerlink" title="一、介绍"></a>一、介绍</h3><p><a target="_blank" rel="noopener" href="http://irfen.me/tag/redis">redis</a>是一个开源的高性能键值对<a target="_blank" rel="noopener" href="http://irfen.me/tag/%E6%95%B0%E6%8D%AE%E5%BA%93">数据库</a>。他通过提供多种键值数据类型来适应不同场景下的存储需求，并借助许多高层级的接口使其可以胜任如缓存、队列系统等不同的角色。</p>
+<blockquote>
+<p><code>nosql </code>非关系数据库   key=》value</p>
+<p>redis  memcached   内存高速缓存数据库</p>
+</blockquote>
+<h3 id="二、可持久化（数据会同步到磁盘中）"><a href="#二、可持久化（数据会同步到磁盘中）" class="headerlink" title="二、可持久化（数据会同步到磁盘中）"></a>二、可持久化（数据会同步到磁盘中）</h3><ul>
+<li><h4 id="RDB"><a href="#RDB" class="headerlink" title="RDB"></a>RDB</h4></li>
+</ul>
+<blockquote>
+<p>RDB其实就是把数据以快照的形式保存在磁盘上。什么是快照呢，你可以理解成把当前时刻的数据拍成一张照片保存下来。</p>
+<p>RDB持久化是指在指定的时间间隔内将内存中的数据集快照写入磁盘。也是默认的持久化方式，这种方式是就是将内存中数据以快照的方式写入到二进制文件中,默认的文件名为<code>dump.rdb</code>。</p>
+</blockquote>
+<ul>
+<li><h4 id="AOF"><a href="#AOF" class="headerlink" title="AOF"></a>AOF</h4><blockquote>
+<p>全量备份总是耗时的，有时候我们提供一种更加高效的方式AOF，工作机制很简单，redis会将每一个收到的写命令都通过<code>write</code>函数追加到文件中。通俗的理解就是日志记录。</p>
+</blockquote>
+</li>
+</ul>
+<h3 id="二、REDIS设置外网访问"><a href="#二、REDIS设置外网访问" class="headerlink" title="二、REDIS设置外网访问"></a>二、REDIS设置外网访问</h3><h4 id="1、两个相关配置"><a href="#1、两个相关配置" class="headerlink" title="1、两个相关配置"></a>1、两个相关配置</h4><blockquote>
+<p>bind:指定可以来连接redis实例的ip<br>protected-mode:保护模式（除本机外，其他的都无法连接）<br><code>protected-mode</code>启用的条件，第一是没有使用bind，第二个是没有设置访问密码</p>
+</blockquote>
+<h4 id="2、设置外网访问"><a href="#2、设置外网访问" class="headerlink" title="2、设置外网访问"></a>2、设置外网访问</h4><ol>
+<li>注视bind并且把<code>protected-mode</code>改为no</li>
+<li>使用bind</li>
+<li>设置密码</li>
+</ol>
+<h3 id="三、redis集群搭建"><a href="#三、redis集群搭建" class="headerlink" title="三、redis集群搭建"></a>三、redis集群搭建</h3><h4 id="1、集群类型"><a href="#1、集群类型" class="headerlink" title="1、集群类型"></a>1、集群类型</h4><blockquote>
+<p>主从<br>哨兵<br>高可用</p>
+</blockquote>
+<h4 id="2、高可用集群部署"><a href="#2、高可用集群部署" class="headerlink" title="2、高可用集群部署"></a>2、<strong>高可用</strong>集群部署</h4><ul>
+<li><h5 id="准备机器"><a href="#准备机器" class="headerlink" title="准备机器"></a>准备机器</h5></li>
+</ul>
+<blockquote>
+<p>192.168.220.128<br>192.168.220.129<br>192.168.220.130</p>
+</blockquote>
+<ul>
+<li><h5 id="部署规划"><a href="#部署规划" class="headerlink" title="部署规划"></a>部署规划</h5></li>
+</ul>
+<p>一台机器上可以运行一主一从redis实例，通过不同的配置文件实现。</p>
+<blockquote>
+<blockquote>
+<p>192.168.220.128:<br>端口：7001（主）    7004（从）<br>192.168.220.129：<br>端口：7002（主）    7005（从）<br>192.168.220.130：<br>端口：7003（主）    7006（从）</p>
+</blockquote>
+</blockquote>
+<ul>
+<li><h5 id="每台机器准备安装redis"><a href="#每台机器准备安装redis" class="headerlink" title="每台机器准备安装redis"></a>每台机器准备安装redis</h5></li>
+</ul>
+<pre><code class="hljs shell">/opt/redis
+	redis-5.0.8.tar.gz
+/opt/redis
+	tar -zxvf redis-5.0.8.tar.gz -C /home/redis
+cd /home/redis/redis-5.0.8
+make</code></pre>
+
+<ul>
+<li><h5 id="修改redis-conf"><a href="#修改redis-conf" class="headerlink" title="修改redis.conf"></a>修改redis.conf</h5></li>
+</ul>
+<p>1、将源配置复制到专门存放配置文件目录</p>
+<p>​    <strong>192.168.220.128：</strong></p>
+<pre><code class="hljs shell">mkdir /home/redis/redis_conf/7001
+mkdir /home/redis/redis_conf/7004
+cp /home/redis/redis-5.0.8/src/redis.conf /home/redis/redis_conf/7001
+cp /home/redis/redis-5.0.8/src/redis.conf /home/redis/redis_conf/7004</code></pre>
+
+<p>2、修改</p>
+<p>需要修改的配置</p>
+<p><strong>192.168.220.128:7001</strong></p>
+<p>创建集群工作目录，conf中需要配置</p>
+<pre><code class="hljs shell">mkdir -p /home/redis/cluster/7001
+mkdir -p /home/redis/cluster/7004</code></pre>
+
+<pre><code class="hljs shell">vim /home/redis/redis_conf/7001</code></pre>
+
+<blockquote>
+<p>daemonize yes 后台模式<br>port 7001 端口号<br>#bind 127.0.0.1 注释本地绑定<br>dir /home/redis/cluster/7001  集群工作目录（根据实际情况提前创建）<br>cluster-enable yes 开启集群模式<br>cluster-config-file nodes-7001.conf 集群配置文件信息<br>cluster-node-timeout 超时设置<br>appendonly  yes  持久化<br>protected-mode no 保护模式<br>requirepass redis 密码<br>masterauth redis 集群通信密码（需要和requirepass密码保持一致）</p>
+</blockquote>
+<pre><code class="hljs shell">vim /home/redis/redis_conf/7004</code></pre>
+
+<blockquote>
+<p>daemonize yes 后台模式<br>port 7004 端口号<br>#bind 127.0.0.1 注释本地绑定<br>dir /home/redis/cluster/7004  集群工作目录（根据实际情况提前创建）<br>cluster-enable yes 开启集群模式<br>cluster-config-file nodes-7004.conf 集群配置文件信息<br>cluster-node-timeout 超时设置<br>appendonly  yes  持久化<br>protected-mode no 保护模式<br>requirepass redis 密码<br>masterauth redis 集群通信密码（需要和requirepass密码保持一致）</p>
+</blockquote>
+<p>5）启动主从服务</p>
+<pre><code class="hljs shell">cd /home/redis/redis-5.0.8/src
+./redis-server /home/redis/redis_conf/7001/redis.conf（启动指定配置好的7001的主配置文件）
+./redis-server /home/redis/redis_conf/7004/redis.conf（启动指定配置好的7004的从配置文件）</code></pre>
+
+<p>检查服务</p>
+<p> ps -ef | grep redis</p>
+<pre><code class="hljs shell">root      15109      1  0 15:44 ?        00:00:23 ./redis-server *:7001 [cluster]
+root      15114      1  0 15:45 ?        00:00:24 ./redis-server *:7004 [cluster]
+root      15418   7101  0 17:38 pts/0    00:00:00 grep --color=auto redis</code></pre>
+
+<p><strong>至此，192.168.220.128上面7001和1004主从redis已完成，其他两台配置一样，注意修改conf文件中port、dir 、cluster-config-file三项配置。</strong></p>
+<h4 id="3、集群启动"><a href="#3、集群启动" class="headerlink" title="3、集群启动"></a>3、集群启动</h4><p>选择其中一台机器启动：</p>
+<p>cd /home/redis/redis-5.0.8/src</p>
+<pre><code class="hljs shell">./redis-cli -a redis --cluster create --cluster-replicas 1 192.168.220.128:7001 192.168.220.129:7002 192.168.220.130:7003 192.168.220.128:7004 192.168.220.129:7005 192.168.220.130:7006</code></pre>
+
+<p>启动日志：</p>
+<pre><code class="hljs shell"><span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Performing <span class="hljs-built_in">hash</span> slots allocation on 6 nodes...</span>
+Master[0] -&gt; Slots 0 - 5460
+Master[1] -&gt; Slots 5461 - 10922
+Master[2] -&gt; Slots 10923 - 16383
+Adding replica 192.168.220.129:7005 to 192.168.220.128:7001
+Adding replica 192.168.220.130:7006 to 192.168.220.129:7002
+Adding replica 192.168.220.128:7004 to 192.168.220.130:7003
+M: 5751ccf39c172abe7ede54ceb152cabfcc054340 192.168.220.128:7001
+   slots:[0-5460] (5461 slots) master
+M: 9024ab249744a894a76bb993a5749c8985ce834d 192.168.220.129:7002
+   slots:[5461-10922] (5462 slots) master
+M: f02a28331b391b8483dc3e8b083e38a1bee82b13 192.168.220.130:7003
+   slots:[10923-16383] (5461 slots) master
+S: 31e33cc31cc35697fd2abf88c185658939a35271 192.168.220.128:7004
+   replicates f02a28331b391b8483dc3e8b083e38a1bee82b13
+S: c81c6332f0ad579329ddda6528786abfe22c513d 192.168.220.129:7005
+   replicates 5751ccf39c172abe7ede54ceb152cabfcc054340
+S: 981b250d5695c8dc54342e8dc19200a39b7c4313 192.168.220.130:7006
+   replicates 9024ab249744a894a76bb993a5749c8985ce834d
+Can I set the above configuration? (type &#x27;yes&#x27; to accept): yes
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Nodes configuration updated</span>
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Assign a different config epoch to each node</span>
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Sending CLUSTER MEET messages to join the cluster</span>
+Waiting for the cluster to join
+.............
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Performing Cluster Check (using node 192.168.220.128:7001)</span>
+M: 5751ccf39c172abe7ede54ceb152cabfcc054340 192.168.220.128:7001
+   slots:[0-5460] (5461 slots) master
+   1 additional replica(s)
+M: f02a28331b391b8483dc3e8b083e38a1bee82b13 192.168.220.130:7003
+   slots:[10923-16383] (5461 slots) master
+   1 additional replica(s)
+S: 31e33cc31cc35697fd2abf88c185658939a35271 192.168.220.128:7004
+   slots: (0 slots) slave
+   replicates f02a28331b391b8483dc3e8b083e38a1bee82b13
+S: c81c6332f0ad579329ddda6528786abfe22c513d 192.168.220.129:7005
+   slots: (0 slots) slave
+   replicates 5751ccf39c172abe7ede54ceb152cabfcc054340
+S: 981b250d5695c8dc54342e8dc19200a39b7c4313 192.168.220.130:7006
+   slots: (0 slots) slave
+   replicates 9024ab249744a894a76bb993a5749c8985ce834d
+M: 9024ab249744a894a76bb993a5749c8985ce834d 192.168.220.129:7002
+   slots:[5461-10922] (5462 slots) master
+   1 additional replica(s)
+[OK] All nodes agree about slots configuration.
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Check <span class="hljs-keyword">for</span> open slots...</span>
+<span class="hljs-meta">&gt;</span><span class="bash">&gt;&gt; Check slots coverage...</span>
+[OK] All 16384 slots covered.
+</code></pre>
+
+<p>连接集群命令：<code>./redis-cli -a redis -c -h  ip  -p  port</code></p>
+<pre><code class="hljs shell">cd /home/redis/redis-5.0.8/src
+./redis-cli -a redis -c -h 192.168.220.129 -p 7002
+</code></pre>
+
+<pre><code class="hljs shell">192.168.220.129:7002&gt; keys *
+(empty list or set)
+192.168.220.129:7002&gt; set k1 v1
+<span class="hljs-meta">-&gt;</span><span class="bash"> Redirected to slot [12706] located at 192.168.220.130:7003</span>
+OK
+192.168.220.130:7003&gt; set k2 v2
+<span class="hljs-meta">-&gt;</span><span class="bash"> Redirected to slot [449] located at 192.168.220.128:7001</span>
+OK
+192.168.220.128:7001&gt; keys *
+1) &quot;k2&quot;
+192.168.220.128:7001&gt; set k3 v3
+OK
+192.168.220.128:7001&gt; set k4 v4
+<span class="hljs-meta">-&gt;</span><span class="bash"> Redirected to slot [8455] located at 192.168.220.129:7002</span>
+OK
+192.168.220.129:7002&gt; quit
+</code></pre>
+
+<p><strong>参考文档：<a target="_blank" rel="noopener" href="https://www.jianshu.com/p/be14306f5fd8">https://www.jianshu.com/p/be14306f5fd8</a></strong></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Redis/">Redis</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/08/30/Harbor%E6%90%AD%E5%BB%BA%E4%B8%8E%E4%BD%BF%E7%94%A8/">
+                        <span class="hidden-mobile">Harbor搭建与使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '#post-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Redis学习笔记&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
