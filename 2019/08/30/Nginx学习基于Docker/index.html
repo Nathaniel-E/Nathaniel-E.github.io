@@ -1,0 +1,1031 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="nathaniel">
+  <meta name="keywords" content="">
+  <title>Nginx笔记基于docker - nathaniel</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/10.0.0/styles/github-gist.min.css" />
+  
+
+  
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_6peoq002giu.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_pjno9b9zyxs.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.1.1"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>Nathaniel</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container page-header text-center fade-in-up">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+  <div class="mt-3 post-meta">
+    <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+    <time datetime="2019-08-30 17:11" pubdate>
+      2019年8月30日 下午
+    </time>
+  </div>
+
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      40
+       分钟
+    </span>
+  
+
+  
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto" id="post">
+            <!-- SEO header -->
+            <h1 style="display: none">Nginx笔记基于docker</h1>
+            
+            <div class="markdown-body" id="post-body">
+              <h3 id="Nginx介绍"><a href="#Nginx介绍" class="headerlink" title="Nginx介绍"></a>Nginx介绍</h3><h4 id="1-1引言"><a href="#1-1引言" class="headerlink" title="1.1引言"></a>1.1引言</h4><p><strong>为什么要学习Nginx</strong><br>问题1：客户端到底要将请求发送给哪台服务器<br>问题2：如果所有客户端的请求都发送给了服务器<br>问题3：客户端发送的请求可能是申请动态资源的，也有申请静态资源的</p>
+<p><code>服务器搭建集群后</code></p>
+<p><img src="https://img-blog.csdnimg.cn/20200804144611463.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<p><code>在搭建集群后，使用Nginx做反向代理</code></p>
+<p><img src="https://img-blog.csdnimg.cn/20200804144623426.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="{}}"></p>
+<h4 id="1-2Nginx介绍"><a href="#1-2Nginx介绍" class="headerlink" title="1.2Nginx介绍"></a>1.2Nginx介绍</h4><p>Nginx是由俄罗斯人研发的，应对Rambler的网站并发，并且2004年发布的第一个版本。</p>
+<p><code>Nginx的特点</code></p>
+<ul>
+<li>稳定性极强，7*24小时不间断运行(就是一直运行)</li>
+<li>Nginx提供了非常丰富的配置实例</li>
+<li>占用内存小，并发能力强(随便配置一下就是5w+,而tomcat的默认线程池是150)</li>
+</ul>
+<h3 id="Nginx的安装"><a href="#Nginx的安装" class="headerlink" title="Nginx的安装"></a>Nginx的安装</h3><h4 id="2-1安装Nginx"><a href="#2-1安装Nginx" class="headerlink" title="2.1安装Nginx"></a>2.1安装Nginx</h4><p>在/opt目录下创建docker_nginx目录</p>
+<pre><code class="hljs shell">cd /opt
+mkdir docker_nginx</code></pre>
+
+<p>创建docker-compose.yml文件并编写下面的内容,保存退出</p>
+<pre><code class="hljs shell">vim docker-compose.yml</code></pre>
+
+<pre><code class="hljs json">version: &#x27;3.1&#x27;
+services: 
+  nginx:
+    restart: always
+    image: daocloud.io/library/nginx:latest
+    container_name: nginx
+    ports: 
+      - 80:80</code></pre>
+
+<p>执行<code>docker-compose up -d</code></p>
+<p>访问80端口，看到下图说明安装成功（ncthz.top是我阿里云服务器的域名，大家输入自己服务器的Ip就可以访问80端口了）</p>
+<p><img src="https://img-blog.csdnimg.cn/20200804144702568.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<h4 id="2-2Nginx的配置文件"><a href="#2-2Nginx的配置文件" class="headerlink" title="2.2Nginx的配置文件"></a>2.2Nginx的配置文件</h4><p>查看当前nginx的配置需要进入docker容器中</p>
+<pre><code class="hljs shell">docker exec -it 容器id bash</code></pre>
+
+<p>进入容器后</p>
+<pre><code class="hljs shell">cd /etc/nginx/
+cat nginx.conf</code></pre>
+
+<p><code>nginx.conf</code>文件内容如下</p>
+<pre><code class="hljs json">user  nginx;
+worker_processes  1;
+
+error_log  /var/log/nginx/error.log warn;
+pid        /var/run/nginx.pid;
+# 以上同城为全局块
+# worker_processes的数值越大，Nginx的并发能力就越强
+# error_log代表Nginx错误日志存放的位置
+# pid是Nginx运行的一个标识
+
+events &#123;
+    worker_connections  1024;
+&#125;
+# events块
+# worker_connections的数值越大，Nginx的并发能力就越强
+
+http &#123;
+    include       /etc/nginx/mime.types;
+    default_type  application/octet-stream;
+
+    log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;
+                      &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;
+                      &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;
+
+    access_log  /var/log/nginx/access.log  main;
+
+    sendfile        on;
+    #tcp_nopush     on;
+
+    keepalive_timeout  65;
+
+    #gzip  on;
+
+    include /etc/nginx/conf.d/*.conf;
+&#125;
+
+# http块
+# include代表引入一个外部文件
+# include       /etc/nginx/mime.types;	mime.types中存放着大量媒体类型
+#include /etc/nginx/conf.d/*.conf;	引入了conf.d下以.conf为结尾的配置文件</code></pre>
+
+<p>conf.d目录下只有一个<code>default.conf</code>文件，内容如下</p>
+<pre><code class="hljs json">server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    #charset koi8-r;
+    #access_log  /var/log/nginx/host.access.log  main;
+
+    location / &#123;
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    &#125;
+	# location块
+	# root:将接受到的请求根据/usr/share/nginx/html去查找静态资源
+	# index:默认去上述的路径中找到index.html或index.htm
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html &#123;
+        root   /usr/share/nginx/html;
+    &#125;
+	
+
+    # proxy the PHP scripts to Apache listening on 127.0.0.1:80
+    #
+    #location ~ \.php$ &#123;
+    #    proxy_pass   http://127.0.0.1;
+    #&#125;
+
+    # pass the PHP scripts to FastCGI server listening on 127.0.0.1:9000
+    #
+    #location ~ \.php$ &#123;
+    #    root           html;
+    #    fastcgi_pass   127.0.0.1:9000;
+    #    fastcgi_index  index.php;
+    #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+    #    include        fastcgi_params;
+    #&#125;
+
+    # deny access to .htaccess files, if Apache&#x27;s document root
+    # concurs with nginx&#x27;s one
+    #
+    #location ~ /\.ht &#123;
+    #    deny  all;
+    #&#125;
+&#125;
+
+# server块
+# listen代表Nginx监听的端口号
+# server_name代表Nginx接受请求的IP</code></pre>
+
+<h4 id="2-3修改docker-compose文件"><a href="#2-3修改docker-compose文件" class="headerlink" title="2.3修改docker-compose文件"></a>2.3修改<code>docker-compose</code>文件</h4><p>退出容器并关闭容器</p>
+<pre><code class="hljs shell">exit
+docker-compose down</code></pre>
+
+<p>修改docker-compose.yml文件如下</p>
+<pre><code class="hljs json">version: &#x27;3.1&#x27;
+services: 
+  nginx:
+    restart: always
+    image: daocloud.io/library/nginx:latest
+    container_name: nginx
+    ports: 
+      - 80:80
+    volumes:
+      - /opt/docker_nginx/conf.d/:/etc/nginx/conf.d</code></pre>
+
+<p>重新构建容器</p>
+<pre><code class="hljs shell">docker-compose bulid</code></pre>
+
+<p>重新启动容器</p>
+<pre><code class="hljs shell">docker-compose up -d</code></pre>
+
+<p>这时我们再次访问80端口是访问不到的，因为我们映射了数据卷之后还没有编写server块中的内容</p>
+<p>我们在<code>/opt/docker_nginx/conf.d</code>下新建<code>default.conf</code>，并插入如下内容</p>
+<pre><code class="hljs json">server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location / &#123;
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+    &#125;
+&#125;</code></pre>
+
+<p>重启nginx</p>
+<pre><code class="hljs shell">docker-compose restart</code></pre>
+
+<p>这时我们再访问80端口，可以看到是访问成功的</p>
+<h3 id="Nginx的反向代理"><a href="#Nginx的反向代理" class="headerlink" title="Nginx的反向代理"></a>Nginx的反向代理</h3><h4 id="3-1正向代理和反向代理介绍"><a href="#3-1正向代理和反向代理介绍" class="headerlink" title="3.1正向代理和反向代理介绍"></a>3.1正向代理和反向代理介绍</h4><p><code>正向代理</code>：<br>1.正向代理服务是由客户端设立的<br>2.客户端了解代理服务器和目标服务器都是谁<br>3.帮助咱们实现突破访问权限，提高访问的速度，对目标服务器隐藏客户端的ip地址</p>
+<p><img src="https://img-blog.csdnimg.cn/20200804144856773.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<p><code>反向代理</code>：<br>1.反向代理服务器是配置在服务端的<br>2.客户端不知道访问的到底是哪一台服务器<br>3.达到负载均衡，并且可以隐藏服务器真正的ip地址</p>
+<p><img src="https://img-blog.csdnimg.cn/20200804144918883.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<h4 id="3-2基于Nginx实现反向代理"><a href="#3-2基于Nginx实现反向代理" class="headerlink" title="3.2基于Nginx实现反向代理"></a>3.2基于Nginx实现反向代理</h4><blockquote>
+<blockquote>
+<p>准备一个目标服务器<br>启动tomcat服务器<br>编写nginx的配置文件(/opt/docker_nginx/conf.d/default.conf)，通过Nginx访问到tomcat服务器</p>
+</blockquote>
+</blockquote>
+<p>准备tomcat服务器</p>
+<pre><code class="hljs shell">docker run -d -p 8080:8080 --name tomcat  daocloud.io/library/tomcat:8.5.15-jre8</code></pre>
+
+<p>或者已经下载了tomcat镜像</p>
+<pre><code class="hljs shell">docker run -d -p 8080:8080 --name tomcat 镜像的标识</code></pre>
+
+<p>添加数据卷</p>
+<pre><code class="hljs shell">docker run -it -v /宿主机绝对目录:/容器内目录 镜像名</code></pre>
+
+<p><code>default.conf</code>文件内容如下</p>
+<pre><code class="hljs json">server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+    location / &#123;
+        proxy_pass http://ncthz.top:8080/;
+    &#125;
+&#125;</code></pre>
+
+<p>重启nginx</p>
+<pre><code class="hljs shell">docker-compose restart</code></pre>
+
+<p>这时我们访问80端口可以看到8080端口tomcat的默认首页</p>
+<h4 id="3-3关于Nginx的location路径映射"><a href="#3-3关于Nginx的location路径映射" class="headerlink" title="3.3关于Nginx的location路径映射"></a>3.3关于Nginx的location路径映射</h4><blockquote>
+<p>优先级关系：<br>(location = ) &gt; (location /xxx/yyy/zzz) &gt; (location ^<del>) &gt; (location ~,</del>*) &gt; (location /起始路径) &gt; (location /)</p>
+</blockquote>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash"> 1. = 匹配</span>
+location / &#123;
+<span class="hljs-meta">	#</span><span class="bash">精准匹配，主机名后面不能带能和字符串</span>
+<span class="hljs-meta">	#</span><span class="bash">例如www.baidu.com不能是www.baidu.com/id=xxx</span>
+&#125;
+</code></pre>
+
+<hr>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">2. 通用匹配</span>
+location /xxx &#123;
+<span class="hljs-meta">	#</span><span class="bash">匹配所有以/xxx开头的路径</span>
+<span class="hljs-meta">	#</span><span class="bash">例如127.0.0.1:8080/xxx	xxx可以为空，为空则和=匹配一样</span>
+&#125;
+</code></pre>
+
+<hr>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">3. 正则匹配</span>
+location ~ /xxx &#123;
+<span class="hljs-meta">	#</span><span class="bash">匹配所有以/xxx开头的路径</span>
+&#125;</code></pre>
+
+<hr>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">4. 匹配开头路径</span>
+location ^~ /xxx/xx &#123;
+<span class="hljs-meta">	#</span><span class="bash">匹配所有以/xxx/xx开头的路径</span>
+&#125;</code></pre>
+
+<hr>
+<pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">5. 匹配结尾路径</span>
+location ~* \.(gif/jpg/png)$ &#123;
+<span class="hljs-meta">	#</span><span class="bash">匹配以.gif、.jpg或者.png结尾的路径</span>
+&#125;</code></pre>
+
+<p>修改<code>/opt/docker_nginx/conf.d/default.conf</code>如下</p>
+<pre><code class="hljs json">server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+	location /index &#123;
+        proxy_pass http://ncthz.top:8081/;	#tomcat首页
+    &#125;
+
+	location ^~ /CR/ &#123;
+        proxy_pass http://ncthz.top:8080/CR/;	#毕设前台首页
+    &#125;
+
+    location / &#123;
+        proxy_pass http://ncthz.top:8080/CRAdmin/;	#毕设后台首页
+    &#125;
+&#125;</code></pre>
+
+<p>重启nginx</p>
+<pre><code class="hljs shell">docker-compose restart</code></pre>
+
+<p>访问ncthz.top/index可以进入tomcat首页<br>访问ncthz.top/CR/XXX可以进入毕设前台首页<br>访问ncthz.top或者ncthz.top:80可以进入毕设后台首页</p>
+<h3 id="Nginx负载均衡"><a href="#Nginx负载均衡" class="headerlink" title="Nginx负载均衡"></a>Nginx负载均衡</h3><ul>
+<li>Nginx为我们默认提供了三种负载均衡的策略：<br>轮询：<br>  将客户端发起的请求，平均分配给每一台服务器</li>
+<li>权重：<br>  会将客户端的请求，根据服务器的权重值不同，分配不同的数量</li>
+<li>ip_hash:<br>  基于发起请求的客户端的ip地址不同，他始终会将请求发送到指定的服务器上<br>  就是说如果这个客户端的请求的ip地址不变，那么处理请求的服务器将一直是同一个</li>
+</ul>
+<h4 id="4-1轮询"><a href="#4-1轮询" class="headerlink" title="4.1轮询"></a>4.1轮询</h4><p>想实现Nginx轮询负载均衡机制只需要修改配置文件如下</p>
+<pre><code class="hljs json">upstream my_server&#123;
+    server ncthz.top:8080;
+    server ncthz.top:8081;
+&#125;
+server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+	location / &#123;
+        proxy_pass http://my_server/;	#tomcat首页
+    &#125;
+&#125;</code></pre>
+
+<pre><code class="hljs json">upstream 名字&#123;
+    server ip:端口;
+    server 域名:端口;
+&#125;
+server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+	location / &#123;
+        proxy_pass http://upstream的名字/;	
+    &#125;
+&#125;</code></pre>
+
+<p>重启nginx</p>
+<pre><code class="hljs shell">docker-compose restart</code></pre>
+
+<p>多次刷新ncthz.top页面，根据版本号我们可以发现我们进入的是不同的tomcat</p>
+<p><img src="https://img-blog.csdnimg.cn/20200804145017833.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<p><img src="https://img-blog.csdnimg.cn/2020080414503175.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<h4 id="4-2权重"><a href="#4-2权重" class="headerlink" title="4.2权重"></a>4.2权重</h4><p>实现权重的方式：在配置文件中upstream块中加上<code>weight</code></p>
+<pre><code class="hljs json">upstream my_server&#123;
+    server ncthz.top:8080 weight=10;
+    server ncthz.top:8081 weight=2;
+&#125;
+server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+	location / &#123;
+        proxy_pass http://my_server/;	#tomcat首页
+    &#125;
+&#125;
+</code></pre>
+
+<h4 id="4-3ip-hash"><a href="#4-3ip-hash" class="headerlink" title="4.3ip_hash"></a>4.3ip_hash</h4><p>实现ip_hash方式：在配置文件upstream块中加上<code>ip_hash</code>;</p>
+<pre><code class="hljs json">upstream my_server&#123;
+	ip_hash;
+    server ncthz.top:8080 weight=10;
+    server ncthz.top:8081 weight=2;
+&#125;
+server &#123;
+    listen       80;
+    listen  [::]:80;
+    server_name  localhost;
+
+	location / &#123;
+        proxy_pass http://my_server/;	#tomcat首页
+    &#125;
+&#125;
+</code></pre>
+
+<h3 id="Nginx动静分离"><a href="#Nginx动静分离" class="headerlink" title="Nginx动静分离"></a>Nginx动静分离</h3><blockquote>
+<blockquote>
+<p>Nginx的并发能力公式：<br> <code>worker_processes * worker_connections / 4|2 = Nginx最终的并发能力</code><br>动态资源需要/4，静态资源需要/2<br>Nginx通过动静分离来提升Nginx的并发能力，更快的给用户响应</p>
+</blockquote>
+</blockquote>
+<h4 id="5-1动态资源代理"><a href="#5-1动态资源代理" class="headerlink" title="5.1动态资源代理"></a>5.1动态资源代理</h4><pre><code class="hljs shell"><span class="hljs-meta">#</span><span class="bash">配置如下</span>
+location / &#123;
+  proxy_pass 路径;
+&#125;
+</code></pre>
+
+<h4 id="5-2静态资源代理"><a href="#5-2静态资源代理" class="headerlink" title="5.2静态资源代理"></a>5.2静态资源代理</h4><p>停掉nginx</p>
+<pre><code class="hljs shell">docker-compose down</code></pre>
+
+<p>修改docker-compose.yml添加静态资源数据卷<br>不同版本的静态资源位置可能不同，可以在2.2中查看默认的位置（location块中root后的路径）</p>
+<p>启动nginx</p>
+<pre><code class="hljs shell">docker-compose up -d</code></pre>
+
+<pre><code class="hljs json">version: &#x27;3.1&#x27;
+services: 
+  nginx:
+    restart: always
+    image: daocloud.io/library/nginx:latest
+    container_name: nginx
+    ports: 
+      - 80:80
+    volumes:
+      - /opt/docker_nginx/conf.d/:/etc/nginx/conf.d
+      - /opt/docker_nginx/html/:/usr/share/nginx/html
+</code></pre>
+
+<pre><code class="hljs json">在/opt/docker_nginx/html下新建一个index.html
+在index.html里面随便写点东西展示
+修改nginx的配置文件
+
+location / &#123;
+    root /usr/share/nginx/html;
+    index index.html;
+&#125;
+</code></pre>
+
+<p>配置如下</p>
+<pre><code class="hljs json">location / &#123;
+    root 静态资源路径;
+    index 默认访问路径下的什么资源;
+    autoindex on;#代表展示静态资源的全部内容，以列表的形式展开
+&#125;
+</code></pre>
+
+<p>重启nginx</p>
+<pre><code class="hljs shell">docker-compose restart</code></pre>
+
+<p>访问ncthz.top如下</p>
+<p><img src="https://img-blog.csdnimg.cn/20200804145109582.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<h3 id="Nginx集群"><a href="#Nginx集群" class="headerlink" title="Nginx集群"></a>Nginx集群</h3><h4 id="6-1引言"><a href="#6-1引言" class="headerlink" title="6.1引言"></a>6.1引言</h4><blockquote>
+<p>单点故障，避免nginx的宕机，导致整个程序的崩溃<br>准备多台Nginx<br>准备keepalived，监听nginx的健康情况<br>准备haproxy，提供一个虚拟的路径，统一的去接收用户的请求</p>
+</blockquote>
+<p><img src="https://img-blog.csdnimg.cn/20200804145126982.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L20wXzQ5NTU4ODUx,size_16,color_FFFFFF,t_70" srcset="/img/loading.gif" alt="Image text"></p>
+<h4 id="6-2搭建"><a href="#6-2搭建" class="headerlink" title="6.2搭建"></a>6.2搭建</h4><blockquote>
+<p>先准备好以下文件放入/opt/docker_nginx_cluster目录中<br>然后启动容器    注意确保80、8081和8082端口未被占用(或者修改docker-compose.yml中的端口)<br>docker-compose up -d</p>
+<p>然后我们访问8081端口可以看到master，访问8082端口可以看到slave<br>因为我们设置了81端口的master优先级未200比82端口的slave优先级100高，所以我们访问80端口看到的是master<br>现在我们模仿8081端口的nginx宕机了<br>docker stop 8081端口nginx容器的ID<br>这时我们再去访问80端口看到的就是slave了</p>
+</blockquote>
+<p><code>Dockerfile</code></p>
+<pre><code class="hljs json">FROM nginx:1.13.5-alpine
+
+RUN apk update &amp;&amp; apk upgrade
+
+RUN apk add --no-cache bash curl ipvsadm iproute2 openrc keepalived
+
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+CMD [&quot;/entrypoint.sh&quot;]
+</code></pre>
+
+<p><code>entrypoint.sh</code></p>
+<pre><code class="hljs json">#!/bin/sh
+
+#/usr/sbin/keepalvined -n -l -D -f /etc/keepalived/keepalived.conf --dont-fork --log-console &amp;
+/usr/sbin/keepalvined -D -f /etc/keepalived/keepalived.conf
+
+
+nginx -g &quot;daemon off;&quot;
+</code></pre>
+
+<p><code>docker-compose.yml</code></p>
+<pre><code class="hljs json">version: &quot;3.1&quot;
+services:
+  nginx_master:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      -8081:80
+    volumes:
+      - ./index-master.html:/usr/share/nnginx/html/index.html
+      - ./favicon.ico:/usr/share/nnginx/html/favicon.ico
+      - ./keepalived-master.conf:/etv/keepalived/keepalived.conf
+    networks:
+      static-network:
+        ipv4_address:172.20.128.2
+    cap_add:
+      - NET_ADMIN
+  nginx_slave:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    ports:
+      -8082:80
+    volumes:
+      - ./index-slave.html:/usr/share/nnginx/html/index.html
+      - ./favicon.ico:/usr/share/nnginx/html/favicon.ico
+      - ./keepalived-slave.conf:/etv/keepalived/keepalived.conf
+    networks:
+      static-network:
+        ipv4_address:172.20.128.3
+    cap_add:
+      - NET_ADMIN
+  proxy:
+    image:  haproxy:1.7-apline
+    ports:
+      - 80:6301
+    volumes:
+      - ./happroxy.cfg:/usr/local/etc/haproxy/haproxy.cfg
+    networks:
+      - static-network
+networks:
+  static-network:
+    ipam:
+      congig:
+        - subnet: 172.20.0.0/16
+</code></pre>
+
+<p><code>keepalived-master.conf</code></p>
+<pre><code class="hljs json">vrrp_script chk_nginx &#123;
+    script &quot;pidof nginx&quot;
+    interval 2
+&#125;
+
+vrrp_instance VI_1 &#123;
+    state MASTER
+    interface etch0	#容器内部的网卡名称
+    virtual_router_id 33
+    priority 200	#优先级
+    advert_int 1
+    
+    autheentication &#123;
+    	auth_type PASS
+    	auth_pass letmein
+	&#125;
+
+	virtual_ipaddress &#123;
+        172.20.128.50	#虚拟路径
+    &#125;
+
+	track_script &#123;
+        chk_nginx
+    &#125;
+&#125;
+</code></pre>
+
+<p><code>keepalived-slave.conf</code></p>
+<pre><code class="hljs json">vrrp_script chk_nginx &#123;
+    script &quot;pidof nginx&quot;
+    interval 2
+&#125;
+
+vrrp_instance VI_1 &#123;
+    state BACKUP
+    interface etch0	#容器内部的网卡名称
+    virtual_router_id 33
+    priority 100	#优先级
+    advert_int 1
+    
+    autheentication &#123;
+    	auth_type PASS
+    	auth_pass letmein
+	&#125;
+
+	virtual_ipaddress &#123;
+        172.20.128.50	#虚拟路径
+    &#125;
+
+	track_script &#123;
+        chk_nginx
+    &#125;
+&#125;
+</code></pre>
+
+<p><code>haproxy.cfg</code></p>
+<pre><code class="hljs json">global
+	log 127.0.0.1 local0
+	maxconn 4096
+	daemon
+	nbproc 4
+	
+defaults
+	log 127.0.0.1 local3
+	mode http
+	option dontlognull
+	option redispatch
+	retries 2
+	maxconn 2000
+	balance roundrobin
+	timeout connect 5000ms
+	timeout client 5000ms
+	timeout server 5000ms
+	
+frontend main
+	bind *:6301
+	default_backend webserver
+	
+backend webserveer
+	server nginx_master 127.20.127.50:80 check inter 2000 rise 2 fall 5
+</code></pre>
+
+<p><code>index-master.html</code></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>master！<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span>
+</code></pre>
+
+<p><code>index-slave.html</code></p>
+<pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">h1</span>&gt;</span>slave！<span class="hljs-tag">&lt;/<span class="hljs-name">h1</span>&gt;</span></code></pre>
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Nginx/">Nginx</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2019/09/30/Zookeeper%E5%85%A5%E9%97%A8%E7%9C%8B%E8%BF%99%E7%AF%87%E5%B0%B1%E5%A4%9F%E4%BA%86/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Zookeeper入门看这篇就够了</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2019/08/30/%E4%BD%BF%E7%94%A8Git-hexo%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">
+                        <span class="hidden-mobile">使用Git+hexo搭建个人博客</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/main.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '#post-body',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "Nginx笔记基于docker&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      searchFunc(path, 'local-search-input', 'local-search-result');
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>
